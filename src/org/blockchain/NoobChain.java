@@ -11,39 +11,43 @@ import java.util.ArrayList;
 public class NoobChain {
 
     public static ArrayList<Block> blockchain = new ArrayList<>();
+    public static int difficulty = 5;
 
     public static void main(String[] args){
 
-        Block genesisBlock = new Block("I am the first Block", "0");
-        System.out.println("Hash for block 1 : " + genesisBlock.hash);
+        blockchain.add(new Block("I am the first Block", "0"));
+        System.out.println("try to mine Block 1 ...");
+        blockchain.get(0).mineBlock(difficulty);
+        blockchain.add(new Block("Yo im the second block",blockchain.get(blockchain.size()-1).hash));
+        System.out.println("try to mine Block 2 ...");
+        blockchain.get(1).mineBlock(difficulty);
+        blockchain.add(new Block("Hey im the third block",blockchain.get(blockchain.size()-1).hash));
+        System.out.println("try to mine Block 3 ...");
+        blockchain.get(2).mineBlock(difficulty);
 
-        Block secondBlock = new Block("Yo im the second block",genesisBlock.hash);
-        System.out.println("Hash for block 2 : " + secondBlock.hash);
-
-        Block thirdBlock = new Block("Hey im the third block",secondBlock.hash);
-        System.out.println("Hash for block 3 : " + thirdBlock.hash);
-
-        blockchain.add(genesisBlock);
-        blockchain.add(secondBlock);
-        blockchain.add(thirdBlock);
-
+        System.out.println("Blockchain is Valid: " + isChainValid());
         String blockshainJson = new GsonBuilder().setPrettyPrinting().create().toJson(blockchain);
         System.out.println(blockshainJson);
     }
 
-    public static boolean isChainvalid(){
+    public static boolean isChainValid(){
         Block currentBlock;
         Block previousBlock;
+        String hashTarget = new String(new char[difficulty]).replace('\0', '0');
 
         for (int i = 1; i < blockchain.size() - 1; i++){
             currentBlock = blockchain.get(i);
             previousBlock = blockchain.get(i-1);
-            if (currentBlock.previousHash.equals(previousBlock.hash)){
+            if (!currentBlock.previousHash.equals(previousBlock.hash)){
                 System.out.println("Previous hashes are not equals at position : " + i);
                 return false;
             }
-            if (currentBlock.hash.equals(currentBlock.calculateHash()){
+            if (!currentBlock.hash.equals(currentBlock.calculateHash())){
                 System.out.println("Current hashes are not equals at position : " + i);
+                return false;
+            }
+            if (!currentBlock.hash.substring(0, difficulty).equals(hashTarget)){
+                System.out.println("The Block number " + i + " has not been mined");
                 return false;
             }
         }
