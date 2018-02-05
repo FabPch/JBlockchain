@@ -46,4 +46,54 @@ public class Transaction {
         String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient) + Float.toString(value);
         return StringUtil.verifyECDSASig(sender, data, signature);
     }
+
+    public boolean processTransaction(){
+
+        if (verifySignature() == false){
+            System.out.println("#Transaction Signature failed to verify");
+            return false;
+        }
+
+        for(TransactionInput i : inputs){
+            i.UTXO = NoobChain.UTXOs.get(i.transactionOutputId);
+        }
+
+        if (getInputsValue() < NoobChain.minimumTransaction){
+            System.out.println("#Transaction Inputs to small: " + getInputsValue());
+            return false;
+        }
+
+        float leftOver = getInputsValue() - value;
+        transactionId = calculateHash();
+        outputs.add(new TransactionOutput(recipient, value, transactionId));
+        outputs.add(new TransactionOutput(sender, leftOver, transactionId));
+
+        for (TransactionOutput o : outputs){
+            NoobChain.UTXOs.put(o.id, o);
+        }
+
+        for (TransactionInput i : inputs){
+            if (i == null) continue;
+            NoobChain.UTXOs.remove(i.UTXO.id);
+        }
+
+        return  true;
+    }
+
+    public float getInputsValue(){
+        float total = 0;
+        for (TransactionInput i : inputs){
+            if (i.UTXO == null) continue;
+            total += i.UTXO.value;
+        }
+        return total;
+    }
+
+    public float getOutputsValue(){
+        float total = 0;
+        for (TransactionOutput o : outputs){
+            total += o.value;
+        }
+        return total;
+    }
 }

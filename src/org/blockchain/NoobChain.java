@@ -6,6 +6,7 @@ import org.util.StringUtil;
 
 import java.security.Security;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Fabien on 29/01/2018.
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 public class NoobChain {
 
     public static ArrayList<Block> blockchain = new ArrayList<>();
+    public static HashMap<String, TransactionOutput> UTXOs = new HashMap<>();
+    public static float minimumTransaction = 0.1f;
     public static int difficulty = 5;
     public static Wallet walletA;
     public static Wallet walletB;
