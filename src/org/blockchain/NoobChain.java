@@ -16,9 +16,10 @@ public class NoobChain {
     public static ArrayList<Block> blockchain = new ArrayList<>();
     public static HashMap<String, TransactionOutput> UTXOs = new HashMap<>();
     public static float minimumTransaction = 0.1f;
-    public static int difficulty = 5;
+    public static int difficulty = 3;
     public static Wallet walletA;
     public static Wallet walletB;
+    public static Transaction genesisTransaction;
 
     public static void main(String[] args){
 
@@ -55,7 +56,9 @@ public class NoobChain {
     public static boolean isChainValid(){
         Block currentBlock;
         Block previousBlock;
-        String hashTarget = new String(new char[difficulty]).replace('\0', '0');
+        String hashTarget = StringUtil.getDifficulty(difficulty);
+        HashMap<String, TransactionOutput> tempUTXOs = new HashMap<>();
+        tempUTXOs.put(genesisTransaction.outputs.get(0).id, genesisTransaction.outputs.get(0));
 
         for (int i = 1; i < blockchain.size() - 1; i++){
             currentBlock = blockchain.get(i);
@@ -74,5 +77,10 @@ public class NoobChain {
             }
         }
         return true;
+    }
+
+    public static void addBlock(Block newBlock) {
+        newBlock.mineBlock(difficulty);
+        blockchain.add(newBlock);
     }
 }

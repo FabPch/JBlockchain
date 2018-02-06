@@ -1,6 +1,9 @@
 package org.util;
 
+import org.blockchain.Transaction;
+
 import java.security.*;
+import java.util.ArrayList;
 import java.util.Base64;
 
 /**
@@ -55,5 +58,31 @@ public class StringUtil {
 
     public static String getStringFromKey(Key key){
         return Base64.getEncoder().encodeToString(key.getEncoded());
+    }
+
+    public static String getMerkleRoot(ArrayList<Transaction> transactions){
+        int count = transactions.size();
+        ArrayList<String> previousTreeLayer = new ArrayList<>();
+
+        for (Transaction t : transactions){
+            previousTreeLayer.add(t.transactionId);
+        }
+
+        ArrayList<String> treeLayer = previousTreeLayer;
+        while (count > 1){
+            treeLayer = new ArrayList<>();
+            for (int i=1; i<previousTreeLayer.size(); i++){
+                treeLayer.add(applySha256(previousTreeLayer.get(i-1)) + applySha256(previousTreeLayer.get(i)));
+            }
+            count = treeLayer.size();
+            previousTreeLayer = treeLayer;
+        }
+
+        String merkleRoot = (treeLayer.size() == 1) ? treeLayer.get(0) : "";
+        return merkleRoot;
+    }
+
+    public static String getDifficulty(int i){
+        new String(new char[i]).replace('\0', '0');
     }
 }
