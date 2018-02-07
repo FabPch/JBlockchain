@@ -83,6 +83,6 @@ public class StringUtil {
     }
 
     public static String getDifficulty(int i){
-        new String(new char[i]).replace('\0', '0');
+        return new String(new char[i]).replace('\0', '0');
     }
 }
